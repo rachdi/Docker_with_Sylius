@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+    image: app/sylius:dev
+    ports:
+      - 80:80
+    links:
+      - db
+    volumes:
+      - ./sylius:/app
+    environment:
+      - "SYLIUS_APP_DEV_PERMITTED=1"
+      - "SYLIUS_DATABASE_HOST=db"
+      - "SYLIUS_DATABASE_USER=sylius"
+      - "SYLIUS_DATABASE_PASSWORD=sylius"
+      - "SYLIUS_DATABASE_NAME=sylius"
+
+  db:
+    build:
+      context: ./ops/docker-compose/mysql
+      dockerfile: ./Dockerfile
+    image: db/sylius-mysql:dev
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=sylius
+      - MYSQL_USER=sylius
+      - MYSQL_PASSWORD=sylius
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+
+volumes:
+  mysql_data:
+    driver: local
